@@ -1,0 +1,17 @@
+{
+  "name": "Arpa's Luna Period Tracker",
+  "short_name": "Arpa's Luna",
+  "description": "A beautiful, personalized period tracker for Zarin Tasnim Arpa.",
+  "start_url": "index.html",
+  "display": "standalone",
+  "background_color": "#fdf2f2",
+  "theme_color": "#e57373",
+  "icons": [
+    {
+      "src": "https://cdn-icons-png.flaticon.com/512/3209/3209955.png",
+      "sizes": "512x512",
+      "type": "image/png",
+      "purpose": "any maskable"
+    }
+  ]
+}

@@ -1,0 +1,220 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>Luna - Period Tracker</title>
+    <link rel="stylesheet" href="style.css?v=52">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;600&family=Playfair+Display:ital,wght@0,400;0,700;1,400&display=swap" rel="stylesheet">
+    <link rel="manifest" href="manifest.json">
+    <meta name="theme-color" content="#fdf2f2">
+</head>
+<body>
+    <!-- Welcome Splash Screen -->
+    <div id="splash" class="splash-screen">
+        <div class="splash-content">
+            <h1 id="greeting">Hello</h1>
+            <p id="splash-compliment" class="compliment">You are very beautiful, Arpa &#10084;&#65039;</p>
+        </div>
+    </div>
+
+    <div id="app" class="hidden">
+        <!-- Dashboard View -->
+        <section id="dashboard" class="view active">
+            <header>
+                <h1 class="brand">Arpa's Luna</h1>
+                <div class="welcome-msg">Hello, Arpa &#10084;&#65039;</div>
+            </header>
+            
+            <div class="dashboard-banner"></div>
+            
+            <div class="status-container">
+                <div class="pulse-circle">
+                    <div class="pulse-inner">
+                        <span class="days-label">Calculating...</span>
+                        <span class="status-text">Analyzing patterns</span>
+                    </div>
+                    <div class="pulse-ring"></div>
+                </div>
+            </div>
+
+            <!-- Daily Phase Insight Card -->
+            <div id="daily-insight-card" class="insight-card hidden">
+                <div class="insight-header">
+                    <span class="insight-icon">&#10024;</span>
+                    <h3 id="insight-phase-name">Biological Phase</h3>
+                </div>
+                <p id="insight-message" class="insight-message">Loading your daily insight...</p>
+            </div>
+
+            <div class="quick-actions">
+                <button class="action-btn" id="open-log-modal">
+                    <span class="icon">&#129656;</span>
+                    <span class="label">Log Period</span>
+                </button>
+                <button class="action-btn" id="view-tips-btn">
+                    <span class="icon">&#10024;</span>
+                    <span class="label">Care Tips</span>
+                </button>
+                <button class="action-btn" id="enable-alerts-btn">
+                    <span class="icon">&#128276;</span>
+                    <span class="label">Alerts</span>
+                </button>
+            </div>
+        </section>
+
+        <!-- Calendar View -->
+        <section id="calendar" class="view">
+            <header>
+                <h1 class="brand">Calendar</h1>
+            </header>
+            <div id="calendar-container" class="card">
+                <div class="calendar-header">
+                    <button id="prev-month" aria-label="Previous month">&lt;</button>
+                    <h2 id="current-month-year">May 2026</h2>
+                    <div class="calendar-actions">
+                        <button id="today-month" class="today-month-btn">Today</button>
+                        <button id="next-month" aria-label="Next month">&gt;</button>
+                    </div>
+                </div>
+                <div class="calendar-grid" id="calendar-grid"></div>
+            </div>
+            <div id="prediction-panel" class="prediction-panel"></div>
+            <div class="legend">
+                <div class="legend-item"><span class="dot today"></span> Today</div>
+                <div class="legend-item"><span class="dot period"></span> Period</div>
+                <div class="legend-item"><span class="dot predicted"></span> Expected days</div>
+                <div class="legend-item"><span class="dot fertile"></span> Fertile</div>
+                <div class="legend-item"><span class="dot ovulation"></span> Ovulation</div>
+            </div>
+        </section>
+
+        <!-- History View -->
+        <section id="history" class="view">
+            <header>
+                <h1 class="brand">History</h1>
+            </header>
+            <div id="history-list" class="history-list"></div>
+            <div class="data-management">
+                <h3>Data Safety</h3>
+                <p>Keep a copy of Arpa's history safe or move it to a new device.</p>
+                <div class="data-actions">
+                    <button id="export-data" class="btn secondary">
+                        <svg viewBox="0 0 24 24" width="18" height="18"><path d="M19 9h-4V3H9v6H5l7 7 7-7zM5 18v2h14v-2H5z" fill="currentColor"/></svg>
+                        Backup Data
+                    </button>
+                    <button id="import-data-btn" class="btn secondary">
+                        <svg viewBox="0 0 24 24" width="18" height="18"><path d="M9 16h6v-6h4l-7-7-7 7h4v6zm-4 2h14v2H5v-2z" fill="currentColor"/></svg>
+                        Restore Data
+                    </button>
+                    <input type="file" id="import-file" style="display: none;" accept=".json">
+                </div>
+            </div>
+        </section>
+
+        <!-- Memories View -->
+        <section id="memories" class="view">
+            <div id="sparkles-container"></div>
+            <header>
+                <h1 class="brand" style="position: relative; z-index: 2;">Beautiful Memories</h1>
+                <p class="subtitle" style="position: relative; z-index: 2;">For Arpa and her sweet son &#10024;</p>
+            </header>
+            <div class="daily-memory-container" id="daily-memory-container">
+                <!-- Daily photo will be injected here by app.js -->
+            </div>
+            <div id="love-counter-container"></div>
+        </section>
+
+        <!-- Tips View -->
+        <section id="tips" class="view">
+            <header>
+                <h1 class="brand">Care for Arpa</h1>
+            </header>
+            <div class="tips-container">
+                <div class="tip-card">
+                    <h3>&#9989; To Do</h3>
+                    <ul style="padding-left: 1.2rem;">
+                        <li><span>Stay hydrated (warm water is best)</span></li>
+                        <li><span>Use a heating pad for comfort</span></li>
+                        <li><span>Light stretching or walking</span></li>
+                        <li><span>Eat dark chocolate for mood</span></li>
+                    </ul>
+                </div>
+                <div class="tip-card">
+                    <h3>&#10060; To Avoid</h3>
+                    <ul style="padding-left: 1.2rem;">
+                        <li><span>Too much caffeine</span></li>
+                        <li><span>Heavy exercise</span></li>
+                        <li><span>Cold food or drinks</span></li>
+                        <li><span>Stressful activities</span></li>
+                    </ul>
+                </div>
+            </div>
+        </section>
+
+        <!-- Bottom Navigation -->
+        <nav class="bottom-nav">
+            <button class="nav-item active" data-view="dashboard">
+                <svg viewBox="0 0 24 24" width="24" height="24"><path d="M10 20v-6h4v6h5v-8h3L12 3 2 12h3v8z" fill="currentColor"/></svg>
+                <span>Home</span>
+            </button>
+            <button class="nav-item" data-view="calendar">
+                <svg viewBox="0 0 24 24" width="24" height="24"><path d="M19 4h-1V2h-2v2H8V2H6v2H5c-1.11 0-1.99.9-1.99 2L3 20c0 1.1.89 2 2 2h14c1.1 0 2-.9 2-2V6c0-1.1-.9-2-2-2zm0 16H5V9h14v11z" fill="currentColor"/></svg>
+                <span>Calendar</span>
+            </button>
+            <button class="nav-item" data-view="history">
+                <svg viewBox="0 0 24 24" width="24" height="24"><path d="M13 3c-4.97 0-9 4.03-9 9H1l3.89 3.89.07.14L9 12H6c0-3.87 3.13-7 7-7s7 3.13 7 7-3.13 7-7 7c-1.93 0-3.68-.79-4.94-2.06l-1.42 1.42C8.27 19.99 10.51 21 13 21c4.97 0 9-4.03 9-9s-4.03-9-9-9zm-1 5v5l4.28 2.54.72-1.21-3.5-2.08V8H12z" fill="currentColor"/></svg>
+                <span>History</span>
+            </button>
+            <button class="nav-item" data-view="memories">
+                <svg viewBox="0 0 24 24" width="24" height="24"><path d="M12 21.35l-1.45-1.32C5.4 15.36 2 12.28 2 8.5 2 5.42 4.42 3 7.5 3c1.74 0 3.41.81 4.5 2.09C13.09 3.81 14.76 3 16.5 3 19.58 3 22 5.42 22 8.5c0 3.78-3.4 6.86-8.55 11.54L12 21.35z" fill="currentColor"/></svg>
+                <span>Love</span>
+            </button>
+        </nav>
+    </div>
+
+    <!-- Log Period Modal -->
+    <div class="modal" id="log-modal">
+        <div class="modal-content">
+            <h2 id="modal-title">Log Period Date</h2>
+            <input type="hidden" id="edit-index" value="">
+            <div class="input-group">
+                <label>Start Date</label>
+                <input type="date" id="new-start">
+            </div>
+            <div class="input-group">
+                <label>End Date</label>
+                <input type="date" id="new-end">
+            </div>
+            <div class="input-group">
+                <label>Flow</label>
+                <select id="new-flow">
+                    <option value="">Not selected</option>
+                    <option value="Light">Light</option>
+                    <option value="Medium">Medium</option>
+                    <option value="Heavy">Heavy</option>
+                </select>
+            </div>
+            <div class="input-group">
+                <label>Symptoms</label>
+                <div class="symptom-picker" id="symptom-picker">
+                    <label><input type="checkbox" value="Cramps"> Cramps</label>
+                    <label><input type="checkbox" value="Headache"> Headache</label>
+                    <label><input type="checkbox" value="Back pain"> Back pain</label>
+                    <label><input type="checkbox" value="Tired"> Tired</label>
+                    <label><input type="checkbox" value="Mood changes"> Mood</label>
+                    <label><input type="checkbox" value="Acne"> Acne</label>
+                </div>
+            </div>
+            <div class="modal-actions">
+                <button class="btn secondary" id="close-modal">Cancel</button>
+                <button class="btn primary" id="save-period">Save Data</button>
+            </div>
+        </div>
+    </div>
+
+    <script src="app.js?v=53"></script>
+</body>
+</html>
