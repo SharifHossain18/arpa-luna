@@ -1,4 +1,8 @@
-const CACHE_NAME = 'arpa-luna-v52';
+const CACHE_NAME = 'arpa-luna-v54';
+
+// Only cache small essential files + small photos
+// Large photos (>2MB) are excluded from pre-cache to avoid install failures
+// They will still load from network and get cached on demand
 const ASSETS = [
   './',
   'index.html',
@@ -11,15 +15,8 @@ const ASSETS = [
   'assets/arpa_memory_3.jpg',
   'assets/arpa_memory_4.jpg',
   'assets/arpa_memory_5.jpg',
-  'assets/arpa_memory_6.jpg',
-  'assets/arpa_memory_7.jpg',
-  'assets/arpa_memory_8.jpg',
-  'assets/arpa_memory_9.jpg',
-  'assets/arpa_memory_10.jpg',
-  'assets/arpa_memory_11.jpg',
   'assets/arpa_memory_12.jpg',
   'assets/arpa_memory_13.jpg',
-  'assets/arpa_memory_14.jpg',
   'assets/arpa_memory_15.jpg',
   'assets/arpa_memory_16.jpg',
   'assets/arpa_memory_17.jpg',
@@ -36,13 +33,18 @@ const ASSETS = [
   'assets/arpa_memory_28.jpg',
   'assets/arpa_memory_29.jpg',
   'assets/arpa_memory_30.jpg'
+  // arpa_memory_6,7,8,9,10,11 excluded (too large, cached on-demand instead)
 ];
 
 self.addEventListener('install', (event) => {
   event.waitUntil(
     caches.open(CACHE_NAME).then((cache) => {
-      console.log('Caching Arpa\'s app assets');
-      return cache.addAll(ASSETS);
+      // Use Promise.allSettled so one failed asset doesn't break the whole install
+      return Promise.allSettled(
+        ASSETS.map(asset => cache.add(asset).catch(err => {
+          console.warn('Failed to cache:', asset, err);
+        }))
+      );
     })
   );
   self.skipWaiting();
@@ -56,27 +58,30 @@ self.addEventListener('activate', (event) => {
       );
     })
   );
+  self.clients.claim();
 });
 
 self.addEventListener('fetch', (event) => {
   const url = new URL(event.request.url);
-  
-  // Handle root path or index.html requests
-  const isIndex = url.pathname === '/' || url.pathname.endsWith('index.html');
-  
+  const isIndex = url.pathname === '/' || url.pathname.endsWith('index.html') || url.pathname.endsWith('/arpa-luna/');
+
   event.respondWith(
     caches.match(event.request, { ignoreSearch: true }).then((cachedResponse) => {
-      // If found in cache (ignoring query params like ?fresh=...)
       if (cachedResponse) return cachedResponse;
-      
-      // Special case: if requesting root and not in cache, try index.html
+
       if (isIndex) {
         return caches.match('index.html').then(response => response || fetch(event.request));
       }
-      
-      return fetch(event.request);
+
+      // Fetch from network and cache for future offline use
+      return fetch(event.request).then(response => {
+        if (response && response.status === 200) {
+          const clone = response.clone();
+          caches.open(CACHE_NAME).then(cache => cache.put(event.request, clone));
+        }
+        return response;
+      });
     }).catch(() => {
-      // Offline fallback for index.html
       if (isIndex) return caches.match('index.html');
     })
   );
@@ -86,15 +91,10 @@ self.addEventListener('notificationclick', (event) => {
   event.notification.close();
   event.waitUntil(
     clients.matchAll({ type: 'window' }).then(windowClients => {
-      for (let i = 0; i < windowClients.length; i++) {
-        let client = windowClients[i];
-        if (client.url.includes('index.html') && 'focus' in client) {
-          return client.focus();
-        }
+      for (let client of windowClients) {
+        if (client.url.includes('arpa-luna') && 'focus' in client) return client.focus();
       }
-      if (clients.openWindow) {
-        return clients.openWindow('index.html');
-      }
+      if (clients.openWindow) return clients.openWindow('./');
     })
   );
 });
