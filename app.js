@@ -743,8 +743,11 @@ document.addEventListener('DOMContentLoaded', () => {
         if (greetingEl) greetingEl.textContent = greeting;
         
         if (splashCompliment) {
-            const randomIndex = Math.floor(Math.random() * romanticMessages.length);
-            splashCompliment.textContent = romanticMessages[randomIndex];
+            const today = new Date();
+            const dayOfYear = Math.floor((today - new Date(today.getFullYear(), 0, 0)) / (1000 * 60 * 60 * 24));
+            const messageIndex = dayOfYear % romanticMessages.length;
+            
+            splashCompliment.textContent = romanticMessages[messageIndex];
             // Add a slight fade-in effect to the compliment
             splashCompliment.style.opacity = '0';
             setTimeout(() => {
