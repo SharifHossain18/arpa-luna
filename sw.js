@@ -1,4 +1,4 @@
-const CACHE_NAME = 'arpa-luna-v54';
+const CACHE_NAME = 'arpa-luna-v55';
 
 // Only cache small essential files + small photos
 // Large photos (>2MB) are excluded from pre-cache to avoid install failures
@@ -9,6 +9,8 @@ const ASSETS = [
   'style.css',
   'app.js',
   'manifest.json',
+  'icon-192.png',
+  'icon-512.png',
   'assets/daa7254c-65ac-4c99-a41c-bb63cdecec96-1e8067c.jpg',
   'assets/arpa_memory_1.jpg',
   'assets/arpa_memory_2.jpg',
