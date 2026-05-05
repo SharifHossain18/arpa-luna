@@ -230,15 +230,17 @@ header {
 
 /* Bottom Navigation */
 .bottom-nav {
-    background: rgba(255, 255, 255, 0.9);
-    backdrop-filter: blur(15px);
+    background: var(--white); /* Solid background to hide content underneath */
+    box-shadow: 0 -5px 20px rgba(0, 0, 0, 0.05); /* Added shadow for depth */
     display: flex;
     justify-content: space-around;
     padding: 0.8rem 0 2rem;
     border-top: 1px solid rgba(229, 115, 115, 0.1);
-    position: sticky;
+    position: fixed; /* Changed to fixed for better mobile reliability */
     bottom: 0;
-    z-index: 1000;
+    width: 100%;
+    max-width: 500px; /* Matches #app width */
+    z-index: 9999;
 }
 
 .nav-item {
