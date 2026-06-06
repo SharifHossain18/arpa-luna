@@ -48,7 +48,21 @@ const cycleData = [
     { start: "2026-04-19", end: "2026-04-24" }
 ];
 
+function updateOnlineStatus() {
+    const badge = document.getElementById('offline-badge');
+    if (!badge) return;
+    if (navigator.onLine) {
+        badge.style.display = 'none';
+    } else {
+        badge.style.display = 'inline';
+    }
+}
+
 document.addEventListener('DOMContentLoaded', () => {
+    window.addEventListener('online', updateOnlineStatus);
+    window.addEventListener('offline', updateOnlineStatus);
+    updateOnlineStatus();
+
     const navItems = document.querySelectorAll('.nav-item');
     const views = document.querySelectorAll('.view');
     const today = stripTime(new Date());

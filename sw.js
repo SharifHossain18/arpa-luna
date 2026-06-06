@@ -1,4 +1,4 @@
-const CACHE_NAME = 'arpa-luna-v57';
+const CACHE_NAME = 'arpa-luna-v58';
 
 // Only cache small essential files + small photos
 // Large photos (>2MB) are excluded from pre-cache to avoid install failures
