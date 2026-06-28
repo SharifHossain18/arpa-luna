@@ -114,8 +114,8 @@ document.addEventListener('DOMContentLoaded', () => {
         const flow = document.getElementById('new-flow').value;
         const symptoms = getSelectedSymptoms();
         const editIndexValue = document.getElementById('edit-index').value;
-        if (start && end) {
-            const newCycle = { start, end, flow, symptoms };
+        if (start) {
+            const newCycle = { start, end: end || null, flow, symptoms };
             const storedData = getFullData();
             if (editIndexValue !== '') {
                 storedData[Number(editIndexValue)] = newCycle;
@@ -227,6 +227,7 @@ document.addEventListener('DOMContentLoaded', () => {
         const periodLengths = [];
 
         fullData.slice(-12).forEach(cycle => {
+            if (!cycle.end) return;
             const start = parseDate(cycle.start);
             const end = parseDate(cycle.end);
             const duration = daysBetween(start, end) + 1;
@@ -354,11 +355,32 @@ document.addEventListener('DOMContentLoaded', () => {
         const daysLabel = document.querySelector('.days-label');
         const statusText = document.querySelector('.status-text');
         const pulseInner = document.querySelector('.pulse-inner');
+
+        const fullData = getFullData();
+        const lastCycle = fullData[fullData.length - 1];
+        const isOnPeriod = lastCycle && !lastCycle.end && daysBetween(parseDate(lastCycle.start), today) >= 0;
+
+        const oldDate = pulseInner.querySelector('.prediction-date');
+        if (oldDate) oldDate.remove();
+
+        if (isOnPeriod) {
+            const daysSince = daysBetween(parseDate(lastCycle.start), today);
+            daysLabel.textContent = daysSince === 0 ? "Day 1" : `Day ${daysSince + 1}`;
+            statusText.textContent = "You are on your period \u2764\ufe0f";
+            const subtitle = document.createElement('p');
+            subtitle.className = 'prediction-date';
+            subtitle.textContent = `Started ${formatDate(parseDate(lastCycle.start), { month: 'long', day: 'numeric' })}`;
+            subtitle.style.fontSize = '0.9rem';
+            subtitle.style.marginTop = '0.5rem';
+            subtitle.style.color = '#d81b60';
+            subtitle.style.fontWeight = '600';
+            pulseInner.appendChild(subtitle);
+            return;
+        }
+
         const diffDays = daysBetween(today, predictionData.nextStart);
         daysLabel.textContent = diffDays > 0 ? diffDays : (diffDays === 0 ? "Today" : Math.abs(diffDays));
         statusText.textContent = diffDays > 0 ? "Days until period" : (diffDays === 0 ? "Period expected" : "Days late");
-        const oldDate = pulseInner.querySelector('.prediction-date');
-        if (oldDate) oldDate.remove();
         const dateStr = formatDate(predictionData.nextStart, { month: 'long', day: 'numeric' });
         const subtitle = document.createElement('p');
         subtitle.className = 'prediction-date';
@@ -448,7 +470,8 @@ document.addEventListener('DOMContentLoaded', () => {
         const fullData = getFullData();
         if (fullData.length === 0) return;
 
-        const lastStart = parseDate(fullData[fullData.length - 1].start);
+        const lastCycle = fullData[fullData.length - 1];
+        const lastStart = parseDate(lastCycle.start);
         const daysSinceStart = daysBetween(lastStart, today);
         let phaseKey = 'luteal';
 
@@ -478,26 +501,28 @@ document.addEventListener('DOMContentLoaded', () => {
         fullData.forEach((cycle, index) => {
             const sourceIndex = fullData.length - 1 - index;
             const start = parseDate(cycle.start);
-            const end = parseDate(cycle.end);
+            const isOngoing = !cycle.end;
+            const end = isOngoing ? today : parseDate(cycle.end);
             const duration = daysBetween(start, end) + 1;
             let cycleLen = '--';
-            if (index < fullData.length - 1) {
+            if (!isOngoing && index < fullData.length - 1) {
                 const prevStart = parseDate(fullData[index + 1].start);
                 cycleLen = daysBetween(prevStart, start);
             }
             const item = document.createElement('div');
-            item.className = 'history-item';
+            item.className = 'history-item' + (isOngoing ? ' ongoing' : '');
             const symptomChips = Array.isArray(cycle.symptoms) && cycle.symptoms.length
                 ? cycle.symptoms.map(symptom => `<span class="symptom-chip">${symptom}</span>`).join('')
                 : '<span class="symptom-chip muted">No symptoms logged</span>';
             const flowChip = cycle.flow ? `<span class="flow-chip">${cycle.flow} flow</span>` : '';
+            const ongoingBadge = isOngoing ? '<span class="ongoing-badge">Ongoing</span>' : '';
             item.innerHTML = `
                 <div class="history-date">
-                    <span class="history-range">${start.toLocaleDateString(undefined, { month: 'short', day: 'numeric', year: 'numeric' })}</span>
-                    <span class="history-duration">${duration} days period</span>
+                    <span class="history-range">${start.toLocaleDateString(undefined, { month: 'short', day: 'numeric', year: 'numeric' })} ${ongoingBadge}</span>
+                    <span class="history-duration">${duration} day${isOngoing ? ' so far' : ' period'}</span>
                     <button class="edit-entry-btn" onclick="editCycle(${sourceIndex})">
                         <svg viewBox="0 0 24 24" width="16" height="16"><path d="M3 17.25V21h3.75L17.81 9.94l-3.75-3.75L3 17.25zm17.71-10.04c.39-.39.39-1.02 0-1.41L18.2 3.29a.9959.9959 0 0 0-1.41 0l-1.96 1.96L18.58 9l2.13-1.79z" fill="currentColor"/></svg>
-                        Edit entry
+                        ${isOngoing ? 'Add end date' : 'Edit entry'}
                     </button>
                     <div class="history-tags">
                         ${flowChip}
@@ -555,7 +580,7 @@ document.addEventListener('DOMContentLoaded', () => {
 
             const isPeriod = fullData.some(c => {
                 const s = parseDate(c.start);
-                const e = parseDate(c.end);
+                const e = c.end ? parseDate(c.end) : today;
                 return dateInRange(date, s, e);
             });
             if (isPeriod) dayEl.classList.add('period');
