@@ -73,24 +73,19 @@ header {
     width: calc(100% - 3rem);
     height: 120px;
     margin: 0 1.5rem 1rem;
-    background-image: var(--banner-bg, url('assets/daa7254c-65ac-4c99-a41c-bb63cdecec96-1e8067c.jpg?v=1'));
-    background-repeat: no-repeat;
-    background-position: center center;
-    background-size: cover;
+    background: linear-gradient(135deg, #fce4ec, #f3e5f5, #e8eaf6);
     border-radius: 25px;
     box-shadow: var(--shadow-soft);
     position: relative;
     overflow: hidden;
+    display: flex;
+    align-items: center;
+    justify-content: center;
 }
 
-.dashboard-banner::after {
-    content: "";
-    position: absolute;
-    top: 0;
-    left: 0;
+#luna-banner svg {
     width: 100%;
     height: 100%;
-    background: linear-gradient(to right, rgba(255,255,255,0.4), transparent);
 }
 
 /* Dashboard Status Circle */

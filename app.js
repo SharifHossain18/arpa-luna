@@ -608,13 +608,30 @@ document.addEventListener('DOMContentLoaded', () => {
         const memory = dailyMemories[index];
 
         document.documentElement.style.setProperty('--splash-bg', `url('${memory.image}')`);
-        document.documentElement.style.setProperty('--banner-bg', `url('${memory.image}')`);
 
         showSplash();
         predictNextPeriod();
         renderHistory();
         renderDailyMemory();
         setupDataManagement();
+        initBannerAnimation();
+    }
+
+    function initBannerAnimation() {
+        if (typeof lottie !== 'undefined') {
+            fetch('assets/animations/luna_moon.json')
+                .then(r => r.json())
+                .then(data => {
+                    lottie.loadAnimation({
+                        container: document.getElementById('luna-banner'),
+                        renderer: 'svg',
+                        loop: true,
+                        autoplay: true,
+                        animationData: data
+                    });
+                })
+                .catch(() => {});
+        }
     }
 
     const dailyMemories = [
